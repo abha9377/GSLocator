@@ -99,7 +99,4 @@ return array(
             ),
         ),
     ),
-		'GMaps'=> array(
-        'api_key' => 'AIzaSyCiQGPje4JkEEg_w1mRJ2Pi7seSs_WjFug',
-    ),
 );
