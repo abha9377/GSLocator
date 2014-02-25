@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+<Placemark>
+<Point>
+<coordinates>
+34.553300,0.581000
+</coordinates>
+</Point>
+<name>
+Gun shots...
+</name>
+<TimeStamp>
+<when>
+2008-01-16
+</when>
+</TimeStamp>
+<description>
+&lt;a href="http://legacy.ushahidi.com/incident.asp?id=68" target="_blank"&gt;more info &gt;&gt;&lt;/a&gt;
+</description>
+</Placemark>
+<Placemark>
+<Point>
+<coordinates>
+34.126800,0.460700
+</coordinates>
+</Point>
+<name>Militia kill 30 fleeing Kenyans by ...
+</name>
+<TimeStamp><when>2008-01-17</when></TimeStamp>
+<description>&lt;a href="http://legacy.ushahidi.com/incident.asp?id=63" target="_blank"&gt;more info &gt;&gt;&lt;/a&gt;</description>
+</Placemark>
+</Document>
+</kml>
