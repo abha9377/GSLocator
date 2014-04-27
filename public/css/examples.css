@@ -1,5 +1,14 @@
-div, p {
-font-family: Verdana, Arial, sans-serif;
+.slider {
+    height: 3em;
+    margin: 5%;
+    min-width: 11em;
+    max-width: 90%;
+}
+.slider-digit {
+    cursor:            pointer;
+    margin:            -.6em;
+    position:        absolute;
+    top:            .32em;
 }
 
 p.content {

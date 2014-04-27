@@ -1,262 +1,320 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>Kenya KML Example</title>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>GSLocator</title>
+
+    <link href="<?php echo $this->basePath() . '/css/examples.css';?>" type="text/css" rel="stylesheet" />
+    <link href="<?php echo $this->basePath() . '/css/bootstrap-theme.min.css'?>" type="text/css" rel="stylesheet" />
+    <link href="<?php echo $this->basePath() . '/css/bootstrap.min.css'?>" type="text/css" rel="stylesheet" />
+    <link href="<?php echo $this->basePath() . '/css/smoothness/jquery-ui.css'?>" type="text/css" rel="stylesheet" />
+
+
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="<?php echo $this->basePath() . '/js/jquery-1.6.2.min.js'; ?>"></script>
     <script type="text/javascript" src="<?php echo $this->basePath() . '/js/mxn/mxn.js?(googlev3)'; ?>"></script>
     <script type="text/javascript" src="<?php echo $this->basePath() . '/js/timeline-1.2.js'; ?>"></script>
     <script src="<?php echo $this->basePath() . '/js/timemap.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo $this->basePath() . '/js/loaders/json.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo $this->basePath() . '/js/loaders/progressive.js'; ?>" type="text/javascript"></script>
+    <script src="<?php echo $this->basePath() . '/js/manipulation.js'; ?>" type="text/javascript"></script>
+
+    <script src="<?php echo $this->basePath() . '/js/jquery-ui-1.10.4.custom.js'; ?>" type="text/javascript"></script>
+
+
     <script type="text/javascript">
+        var tm;
 
-function randomDate(start, end) {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
+        var dateObj = new Date();
+        var month = (new Date()).getMonth();
+        var day = (new Date()).getDate();
+        var year = (new Date()).getFullYear();
 
-var tm;
-var r = "[";
- 
-for (var x=0; x<20; x++) {
- if (x != 0) r+=',';
-  r+='{';
-  r+='title:"Item ' + x + '",';
-  r+='start:"20013-08-15T15:52:01+0000",';
-  r+='point:{lat:'+(50.9 + 10*Math.random()/<?php echo (float)getrandmax(); ?>)
-       +',lon:' + (-1.3 + 10*Math.random()/<?php echo (float)getrandmax(); ?>)+'}';
-  r+='}';
-}
-r+="]";
+        currdate = year + "-" + (month + 1) + "-" + (day + 1);
+        slidedate = new Date();
+		enddate = year + "-" + (month + 2) + "-" + day;
 
-$(function() {
-    
-    tm = TimeMap.init({
-        mapId: "map",               // Id of map div element (required)
-        timelineId: "timeline",     // Id of timeline div element (required)
-        options: {
-            eventIconPath: "<?php echo $this->basePath() . '/img/'; ?>"
-        },
-      datasets: [
-            {
-                id: "events",
-                title: "Event @SUSU",
-                theme: "blue",
-                // note that the lines below are now the preferred syntax
-                type: "basic",
+        var araObj = [
+
+            [1, "Tue"],
+            [2, "Wed"],
+            [3, "Thu"],
+            [4, "Fri"],
+            [5, "Sat"],
+            [6, "Sun"]
+        ];
+
+        var arr = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+		
+        function padding(number) {
+			return (number < 10 ? '0' : '') + number;
+		}
+		
+		$(function () {
+
+            tm = TimeMap.init({
+                mapId: "map", // Id of map div element (required)
+                timelineId: "timeline", // Id of timeline div element (required)
                 options: {
-                    items: [
-                        {
-                          "start" : "2013-11-12T19:00:00+00",
-                          "end" : "2013-11-12T23:00:00+00",
-                          "point" : {
-                              "lat" : 50.933984,
-                              "lon" : -1.397861
-                           },
-                          "title" : "Greek Society Meeting",
-                          "options" : {
-                            // set the full HTML for the info window
-                            "infoHtml": "<div class='custominfostyle'><b>Greek Society</b> are socialising at the Bar with QUiz and Curry.</div>"
-                          }
+                    eventIconPath: "<?php echo $this->basePath() . '/img/'; ?>"
+                },
+                datasets: [{
+                    id: "events",
+                    title: "Event @SUSU",
+                    theme: "blue",
+                    // note that the lines below are now the preferred syntax
+                    type: "progressive",
+                    options: {
+                        type: "json",
+                        start: currdate,
+
+                        url: "<?php echo $this->basePath() . '/prog.php'; ?>?start=[start]&end=[end]&callback=?",
+                        dataMinDate: "2014-01-15",
+                        // one week in milliseconds
+                        interval: 604800000,
+                        // function to turn date into string appropriate for service
+                        formatDate: function (d) {
+                            return TimeMap.util.formatDate(d, 1);
                         },
-                        {
-                          "start" : "2013-11-12T16:00:00+00",
-                          "end" : "2013-11-12T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.934288,
-                              "lon" : -1.397738
-                           },
-                          "title" : "Krishna Society prayer meeting",
-                          "options" : {
-                            "infoHtml": "<div class='custominfostyle'><b>Krishna Society</b> are meditating at the Cube</div>",
-                            "theme": "blue"
-                          }
-                        },
-                        {
-                          "start" : "2013-11-12T18:00:00+00",
-                          "end" : "2013-11-12T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.934176,
-                              "lon" : -1.397662
-                           },
-                          "title" : "Day of Disney Movie Night",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Union Films</b> present the Day of Disney at the Box Office</div>",
-                            "theme": "yellow"
-                          }
-                        },
-												{
-                          "start" : "2013-11-13T14:00:00+00",
-                          "end" : "2013-11-13T20:00:00+00",
-                          "point" : {
-                              "lat" : 50.934203,
-                              "lon" : -1.397512
-                           },
-                          "title" : "General Society Meet",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Asian Society</b> Annual Meet at Building 42</div>",
-                            "theme": "blue"
-                          }
-                        },
-												{
-                          "start" : "2013-11-13T20:00:00+00",
-                          "end" : "2013-11-13T23:30:00+00",
-                          "point" : {
-                              "lat" : 50.934176,
-                              "lon" : -1.397662
-                           },
-                          "title" : "Harry Potter and the Deathly Hallows Part 1",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Union Films</b> present the Harry Potter at the Box Office</div>",
-                            "theme": "yellow"
-                          }
-                        },
-												{
-                          "start" : "2013-11-14T16:00:00+00",
-                          "end" : "2013-11-14T20:00:00+00",
-                          "point" : {
-                              "lat" : 50.93399,
-                              "lon" : -1.396761
-                           },
-                          "title" : "Swimming meet",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Swimming Society</b> are meeting at Jubilee Sports Hall</div>",
-                            "theme": "green"
-                          }
-                        },
-												{
-                          "start" : "2013-11-12T18:00:00+00",
-                          "end" : "2013-11-12T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.933984,
-                              "lon" : -1.397861
-                           },
-                          "title" : "Quiz and Curry",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Philipino Society </b> are hosting a quiz and curry night at the Bridge Bar</div>",
-                            "theme": "blue"
-                          }
-                        },
-												{
-                          "start" : "2013-11-13T18:00:00+00",
-                          "end" : "2013-11-13T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.934176,
-                              "lon" : -1.397662
-                           },
-                          "title" : "Armageddon",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Union Films</b> present the Armageddon at the Box Office</div>",
-                            "theme": "yellow"
-                          }
-                        },
-												{
-                          "start" : "2013-11-13T18:00:00+00",
-                          "end" : "2013-11-13T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.935941,
-                              "lon" : -1.398671
-                           },
-                          "title" : "Diwali Festival: Lighting Diyas",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Asian Society</b> is celebrating Diwali at Turner Sims</div>",
-                            "theme": "blue"
-                          }
-                        },
-												{
-                          "start" : "2013-11-17T16:00:00+00",
-                          "end" : "2013-11-117T20:00:00+00",
-                          "point" : {
-                              "lat" : 50.93399,
-                              "lon" : -1.396761
-                           },
-                          "title" : "Swimming meet",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Swimming Society</b> are meeting at Jubilee Sports Hall</div>",
-                            "theme": "green"
-                          }
-                        },
-												{
-                          "start" : "2013-11-15T16:00:00+00",
-                          "end" : "2013-11-15T20:00:00+00",
-                          "point" : {
-                              "lat" : 50.93399,
-                              "lon" : -1.396761
-                           },
-                          "title" : "Swimming meet",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Swimming Society</b> are meeting at Jubilee Sports Hall</div>",
-                            "theme": "green"
-                          }
-                        },
-												{
-                          "start" : "2013-11-16T16:00:00+00",
-                          "end" : "2013-11-16T20:00:00+00",
-                          "point" : {
-                              "lat" : 50.93399,
-                              "lon" : -1.396761
-                           },
-                          "title" : "Swimming meet",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Swimming Society</b> are meeting at Jubilee Sports Hall</div>",
-                            "theme": "green"
-                          }
-                        },
-												{
-                          "start" : "2013-11-16T18:00:00+00",
-                          "end" : "2013-11-16T22:00:00+00",
-                          "point" : {
-                              "lat" : 50.934176,
-                              "lon" : -1.397662
-                           },
-                          "title" : "The Social Network",
-                          "options" : {
-                            // use the default title/description info window
-                            "infoHtml": "<div class='custominfostyle'><b>Union Films</b> present the Social Network at the Box Office</div>",
-                            "theme": "yellow"
-                          }
-                        }
-                    ]
+                        infoTemplate: '<div class="custominfostyle">{{title}}</div>'
+                    }
+                }],
+                bandIntervals: [
+                    Timeline.DateTime.HOUR,
+                    Timeline.DateTime.DAY
+                ]
+            });
+            // filter function for tags
+            var hasSelectedTag = function (item) {
+                // if no tag was selected, everything passes
+                return !window.selectedTag || (
+                    // item has tags?
+                    item.opts.tags &&
+                    // tag found? (note - will work in IE; Timemap extends the Array prototype if necessary)
+                    item.opts.tags.indexOf(window.selectedTag) >= 0
+                );
+            };
+
+            // add our new function to the map and timeline filters
+            tm.addFilter("map", hasSelectedTag); // hide map markers on fail
+            tm.addFilter("timeline", hasSelectedTag); // hide timeline events on fail
+
+            // Create a new jQuery UI Slider element
+            // and set some default parameters.
+			
+			$("#dateslide").slider({
+                min: -90,
+                max: 90,
+                value: 0,
+				
+                slide: function (event, ui) {
+                     $( "#amount" ).val(ui.value);
+					slidedate.setDate((new Date()).getDate() + ui.value);
+					window.selectedTag = slidedate.getFullYear()+"-"+padding(slidedate.getMonth()+1)+"-"+padding(slidedate.getDate());
+					console.log(slidedate.getFullYear()+"-"+padding(slidedate.getMonth()+1)+"-"+padding(slidedate.getDate()));
+					tm.scrollToDate(slidedate.getFullYear()+"-"+padding(slidedate.getMonth()+1)+"-"+padding(slidedate.getDate()),true,false);
+                    // run filters
+                    tm.filter('map');
+                    tm.filter('timeline');
                 }
-            }
-        ],
-        bandIntervals: [
-            Timeline.DateTime.HOUR, 
-            Timeline.DateTime.DAY
-        ]
-    });
-});
+            });
+			$( "#amount" ).val( $( "#dateslide" ).slider( "value" ) );
+			
+            // onChange handler for pulldown menu
+            $('.tag_select').change(function () {
+                window.selectedTag = $(this).val();
+
+                // run filters
+                tm.filter('map');
+                tm.filter('timeline');
+            });
+
+            $("#dayslide").slider({
+                min: 0,
+                max: araObj.length,
+                value: 0,
+                create: function () {
+                    $(this).children().addClass("ui-corner-all");
+                    $(this).append($('<span></span>').css("left", "0%").addClass("slider-digit").text("Mon"));
+                    for (i = 0; i <= araObj.length; i++) {
+                        $(this).append($('<span></span>').css("left", ((i + 1) * (100 / araObj.length)) + "%").addClass("slider-digit").text(araObj[i][1]));
+                    };
+                },
+                slide: function (event, ui) {
+                    window.selectedTag = arr[ui.value];
+
+
+                    // run filters
+                    tm.filter('map');
+                    tm.filter('timeline');
+                }
+            });
+			
+			
+
+        });
     </script>
-    <link href="<?php echo $this->basePath() . '/css/examples.css';?>" type="text/css" rel="stylesheet"/>
+
     <style>
-    div#timelinecontainer{ height: 150px; }
-    div#mapcontainer{ height: 400px; }
+        div#timelinecontainer {
+            height: 150px;
+        }
+        div#mapcontainer {
+            height: 400px;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <div id="help">
-    <h1>Societies' Locator</h1>
-    We're dynamically <a href='http://localhost/gslocator/public/simulator.php'>loading</a> data from a JSON service that takes start and end date parameters
-    </div>
-    <div id="timemap">
-        <div id="timelinecontainer">
-          <div id="timeline"></div>
+<body>
+    <div class="container">
+        <h1>Southampton University's Google Map Societies Locator</h1>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="row">
+                    <div id="accordion">
+                        <h3>Cultural</h3>
+                        <div>
+                            <form>
+                                <fieldset>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Greek">Greek
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Asian">Asian
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Chinese">Chinese
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Libyan">Libyan
+                                        <br />
+                                    </label>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <h3>Sports</h3>
+                        <div>
+                            <form>
+                                <fieldset>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Swimming">Swimming
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Horse-riding">Horse-riding
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Fencing">Fencing
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Squash">Squash
+                                        <br />
+                                    </label>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <h3>All/Rest</h3>
+                        <div>
+                            <form>
+                                <fieldset>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="">All
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Krishna">Krishna
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Latino-dancing">Latino-dancing
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Ballroom-dancing">Ballroom-dancing
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Shakespearean">Shakespearean
+                                        <br />
+                                    </label>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <h3>Location</h3>
+                        <div>
+                            <form>
+                                <fieldset>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="The Bridge Bar">The Bridge Bar
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="The Cube">The Cube
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Building 42">Building 42
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Turner Sims">Turner Sims
+                                        <br />
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="group" class="tag_select" value="Jubilee Sports Hall">Jubilee Sports Hall
+                                        <br />
+                                    </label>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h4>Day</h4>
+                    <div id="dayslide" class="slider ui-corner-all"></div>
+                </div>
+				
+				
+				 <div class="row">
+                    <h4>Date &plusmn;</h4> <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;" />
+                    <div id="dateslide" class="slider ui-corner-all ui-slider ui-slider-horizontal ui-widget"></div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="timemap">
+                    <div id="timelinecontainer">
+                        <div id="timeline"></div>
+                    </div>
+                    <div id="mapcontainer">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="mapcontainer">
-          <div id="map"></div>
-        </div>
+
+        <footer>
+            <p>&copy; 2013 -
+                <?php echo date( 'Y') ?>by Abha Aggarwal, University of Southampton
+                <?php echo $this->translate('All rights reserved.') ?></p>
+        </footer>
     </div>
-  </body>
+
+    <script>
+        $("#accordion").accordion();
+    </script>
+
+</body>
+
 </html>
-
